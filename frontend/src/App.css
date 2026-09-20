@@ -129,6 +129,13 @@
   margin: 28px 0 56px;
 }
 
+.live-note {
+  max-width: 38rem;
+  margin: -36px 0 48px;
+  color: var(--heat);
+  font-size: 0.95rem;
+}
+
 .primary,
 .ghost,
 .text-btn {

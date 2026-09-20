@@ -27,6 +27,13 @@ export type Finding = {
   evidence: Record<string, unknown>;
 };
 
+export type Status = {
+  ok: boolean;
+  name: string;
+  live_aws: boolean;
+  region: string;
+};
+
 export type ScanResult = {
   scanned_at: string;
   region: string;

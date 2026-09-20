@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { fetchDemo, runScan } from "./api";
+import { fetchDemo, fetchStatus, runLiveAccountScan, runScan } from "./api";
 import type { Finding, FindingType, ScanResult } from "./types";
 import "./App.css";
 
@@ -83,12 +83,41 @@ export default function App() {
   const [secret, setSecret] = useState("");
   const [token, setToken] = useState("");
   const [scanLine, setScanLine] = useState(0);
+  const [liveAws, setLiveAws] = useState(false);
+  const [liveRegion, setLiveRegion] = useState("us-east-1");
+
+  useEffect(() => {
+    fetchStatus()
+      .then((s) => {
+        setLiveAws(s.live_aws);
+        if (s.region) setLiveRegion(s.region);
+      })
+      .catch(() => setLiveAws(false));
+  }, []);
 
   useEffect(() => {
     if (view !== "scanning") return;
     const id = window.setInterval(() => setScanLine((n) => (n + 1) % SCAN_LINES.length), 1400);
     return () => window.clearInterval(id);
   }, [view]);
+
+  async function loadLiveAccount() {
+    setError(null);
+    setView("scanning");
+    setScanLine(0);
+    try {
+      const data = await runLiveAccountScan({
+        region: liveRegion,
+        lookback_days: lookback,
+        cpu_idle_threshold: 5,
+      });
+      setResult(data);
+      setView("results");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Live AWS scan failed");
+      setView("land");
+    }
+  }
 
   async function loadDemo() {
     setError(null);
@@ -147,7 +176,9 @@ export default function App() {
 
       {error && <div className="banner">{error}</div>}
 
-      {view === "land" && <Landing onDemo={loadDemo} onScan={() => setView("connect")} />}
+      {view === "land" && (
+        <Landing onDemo={loadDemo} onScan={() => setView("connect")} onLive={loadLiveAccount} liveAws={liveAws} />
+      )}
       {view === "connect" && (
         <Connect
           region={region}
@@ -162,6 +193,7 @@ export default function App() {
           onToken={setToken}
           onSubmit={onScan}
           onDemo={loadDemo}
+          onLive={liveAws ? loadLiveAccount : undefined}
           onBack={() => setView("land")}
         />
       )}
@@ -180,7 +212,17 @@ export default function App() {
   );
 }
 
-function Landing({ onDemo, onScan }: { onDemo: () => void; onScan: () => void }) {
+function Landing({
+  onDemo,
+  onScan,
+  onLive,
+  liveAws,
+}: {
+  onDemo: () => void;
+  onScan: () => void;
+  onLive: () => void;
+  liveAws: boolean;
+}) {
   return (
     <main className="land">
       <p className="kicker">Data centers already eat a slice of the planet’s electricity. Idle cloud eats it for nothing.</p>
@@ -194,13 +236,27 @@ function Landing({ onDemo, onScan }: { onDemo: () => void; onScan: () => void })
         gear — then tells you the dollars, kilowatt-hours, and CO<sub>2</sub> you get back by shutting them down.
       </p>
       <div className="cta-row">
-        <button className="primary" onClick={onScan}>
-          Scan an AWS account
-        </button>
+        {liveAws ? (
+          <button className="primary" onClick={onLive}>
+            Scan the live AWS account
+          </button>
+        ) : (
+          <button className="primary" onClick={onScan}>
+            Scan an AWS account
+          </button>
+        )}
         <button className="ghost" onClick={onDemo}>
-          Preview the demo ledger
+          Sample ledger (no AWS)
         </button>
+        {liveAws && (
+          <button className="ghost" onClick={onScan}>
+            Use your own keys
+          </button>
+        )}
       </div>
+      {liveAws && (
+        <p className="live-note">The primary button hits a real throwaway AWS account seeded with idle waste. Keys never leave the server.</p>
+      )}
 
       <section className="stat-grid">
         <article>
@@ -259,6 +315,7 @@ function Connect(props: {
   onToken: (v: string) => void;
   onSubmit: (e: FormEvent) => void;
   onDemo: () => void;
+  onLive?: () => void;
   onBack: () => void;
 }) {
   return (
@@ -308,11 +365,16 @@ function Connect(props: {
           <input value={props.token} onChange={(e) => props.onToken(e.target.value)} autoComplete="off" />
         </label>
         <div className="cta-row">
-          <button className="primary" type="submit">
+          {props.onLive && (
+            <button className="primary" type="button" onClick={props.onLive}>
+              Scan live AWS account
+            </button>
+          )}
+          <button className={props.onLive ? "ghost" : "primary"} type="submit">
             Run scan
           </button>
           <button className="ghost" type="button" onClick={props.onDemo}>
-            Use demo data instead
+            Use sample ledger instead
           </button>
         </div>
       </form>
@@ -360,7 +422,7 @@ function Results({
       <div className="results-head">
         <div>
           <p className="eyebrow">
-            {result.mode === "demo" ? "Demo ledger" : "Live account"} · {result.region} · {maskAccount(result.account_id)} ·{" "}
+            {result.mode === "demo" ? "Sample ledger" : "Live AWS account"} · {result.region} · {maskAccount(result.account_id)} ·{" "}
             {result.lookback_days}d lookback
           </p>
           <h1>If you shut this down.</h1>
