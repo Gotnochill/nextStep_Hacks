@@ -4,6 +4,20 @@ Hackathon project for **Earth Forward**: data centers already consume on the ord
 
 No third-party API keys. The scan uses **boto3** and **CloudWatch** against the account you provide.
 
+## Live app
+
+Public site: **coming online with this deploy.** After it is up, judges can:
+
+1. Click **Scan the live AWS account** — real boto3 + CloudWatch against a throwaway account seeded with idle waste.
+2. Click **Sample ledger (no AWS)** if they only want to see the UI.
+3. Clone this repo and run it on their own PC with their own keys (Quick start below). Do not paste production AWS keys into the public site.
+
+### Submission
+
+- **Video** — screen-record the live site: landing pitch → live AWS scan → dollars / kWh / kg CO₂. Keep it under 5 minutes.
+- **Repository** — this GitHub repo.
+- **Live website** — the public URL above.
+
 ## What it finds
 
 - Idle EC2 (low CPU + quiet network over the lookback window)
@@ -36,7 +50,7 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Click **Preview the demo ledger** for a pitch-ready dataset with no AWS account. Click **Scan an AWS account** for a live read.
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Click **Sample ledger (no AWS)** for a pitch-ready dataset with no AWS account. Click **Scan an AWS account** for a live read of keys on your machine.
 
 Leave access keys blank to use the default credential chain (`AWS_ACCESS_KEY_ID`, `~/.aws/credentials`, or SSO). Optional: copy `.env.example` to `.env`.
 
@@ -64,6 +78,14 @@ python scripts/teardown_waste.py --region us-east-1
 ```
 
 The seed script only tags `Project=ember-waste-seed`. Teardown deletes those tags only.
+
+To power **Scan the live AWS account** on the public site, put a **read-only** IAM user from that same throwaway account into the host as:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_DEFAULT_REGION=us-east-1`
+
+Never commit those values. Seed the account first, wait for CloudWatch, then the public button will return real findings.
 
 ### IAM (read-only)
 
