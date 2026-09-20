@@ -6,17 +6,23 @@ No third-party API keys. The scan uses **boto3** and **CloudWatch** against the 
 
 ## Live app
 
-Public site: **coming online with this deploy.** After it is up, judges can:
+Public UI: **https://gotnochill.github.io/nextStep_Hacks/**
 
-1. Click **Scan the live AWS account** — real boto3 + CloudWatch against a throwaway account seeded with idle waste.
-2. Click **Sample ledger (no AWS)** if they only want to see the UI.
-3. Clone this repo and run it on their own PC with their own keys (Quick start below). Do not paste production AWS keys into the public site.
+Judges can open that link on any PC. **Sample ledger (no AWS)** works there immediately.
+
+**Scan the live AWS account** needs the Python API plus a throwaway AWS user. The app is Docker-ready for that. This GitHub account’s previous Railway trial is expired, so the live boto3 endpoint is not on the public internet until a host plan is active (Railway Hobby, Render, or Fly) and these env vars are set on the host — never in git:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_DEFAULT_REGION=us-east-1`
+
+Until then, clone this repo and run Quick start locally with your own read-only keys.
 
 ### Submission
 
-- **Video** — screen-record the live site: landing pitch → live AWS scan → dollars / kWh / kg CO₂. Keep it under 5 minutes.
-- **Repository** — this GitHub repo.
-- **Live website** — the public URL above.
+- **Video** — screen-record: landing pitch → sample or live scan → dollars / kWh / kg CO₂. Keep it under 5 minutes.
+- **Repository** — https://github.com/Gotnochill/nextStep_Hacks
+- **Live website** — https://gotnochill.github.io/nextStep_Hacks/
 
 ## What it finds
 

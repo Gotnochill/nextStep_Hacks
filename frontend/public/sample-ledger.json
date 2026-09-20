@@ -1,0 +1,263 @@
+{
+  "scanned_at": "2026-09-20T08:54:21.720559+00:00",
+  "region": "us-east-1",
+  "account_id": "123456789012",
+  "mode": "demo",
+  "lookback_days": 7,
+  "totals": {
+    "monthly_cost_usd": 1157.84,
+    "annual_cost_usd": 13894.08,
+    "monthly_kwh": 59.64,
+    "annual_kwh": 715.72,
+    "monthly_kg_co2": 24.8,
+    "annual_kg_co2": 297.56,
+    "equivalents": {
+      "miles_driven": 736.5,
+      "phones_charged": 65065.0,
+      "trees_to_offset_year": 14.17
+    }
+  },
+  "counts": {
+    "idle_instances": 1,
+    "oversized_instances": 1,
+    "forgotten_dev": 2,
+    "unattached_volumes": 2,
+    "unused_eips": 1,
+    "idle_nats": 1,
+    "total": 8
+  },
+  "findings": [
+    {
+      "id": "demo-gpu",
+      "primary_type": "forgotten_dev",
+      "types": [
+        "forgotten_dev",
+        "idle_instance"
+      ],
+      "severity": "critical",
+      "resource_id": "i-0a1b2c3d4e5f67890",
+      "resource_name": "ml-experiment-march",
+      "resource_kind": "EC2",
+      "instance_type": "g4dn.xlarge",
+      "region": "us-east-1",
+      "monthly_cost_usd": 383.98,
+      "annual_cost_usd": 4607.76,
+      "monthly_kwh": 7.704,
+      "monthly_kg_co2": 3.203,
+      "annual_kg_co2": 38.44,
+      "recommendation": "Terminate this forgotten GPU box. It has been idle since the hack-week experiment.",
+      "evidence": {
+        "avg_cpu_percent": 0.6,
+        "avg_network_bytes_per_hour": 12000,
+        "lookback_days": 7,
+        "age_days": 47,
+        "tags": {
+          "Name": "ml-experiment-march",
+          "Environment": "dev",
+          "Owner": "intern-2019"
+        },
+        "state": "running"
+      }
+    },
+    {
+      "id": "demo-m5",
+      "primary_type": "idle_instance",
+      "types": [
+        "idle_instance",
+        "oversized_instance"
+      ],
+      "severity": "critical",
+      "resource_id": "i-0f9e8d7c6b5a43210",
+      "resource_name": "analytics-worker-OLD",
+      "resource_kind": "EC2",
+      "instance_type": "m5.4xlarge",
+      "region": "us-east-1",
+      "monthly_cost_usd": 560.64,
+      "annual_cost_usd": 6727.68,
+      "monthly_kwh": 31.109,
+      "monthly_kg_co2": 12.934,
+      "annual_kg_co2": 155.2,
+      "recommendation": "Stop or terminate. Average CPU is under 2% \u2014 this is a 16-vCPU machine doing nothing.",
+      "evidence": {
+        "avg_cpu_percent": 1.4,
+        "avg_network_bytes_per_hour": 8400,
+        "lookback_days": 7,
+        "age_days": 86,
+        "tags": {
+          "Name": "analytics-worker-OLD",
+          "Project": "legacy"
+        },
+        "state": "running"
+      }
+    },
+    {
+      "id": "demo-dev",
+      "primary_type": "forgotten_dev",
+      "types": [
+        "forgotten_dev",
+        "idle_instance"
+      ],
+      "severity": "high",
+      "resource_id": "i-0123456789abcdef0",
+      "resource_name": "dev-api-joshua",
+      "resource_kind": "EC2",
+      "instance_type": "t3.large",
+      "region": "us-east-1",
+      "monthly_cost_usd": 60.74,
+      "annual_cost_usd": 728.83,
+      "monthly_kwh": 3.921,
+      "monthly_kg_co2": 1.63,
+      "annual_kg_co2": 19.56,
+      "recommendation": "This looks like a personal dev environment left running. Stop it overnight or replace with a start/stop schedule.",
+      "evidence": {
+        "avg_cpu_percent": 2.1,
+        "avg_network_bytes_per_hour": 22000,
+        "lookback_days": 7,
+        "age_days": 23,
+        "tags": {
+          "Name": "dev-api-joshua",
+          "Environment": "dev"
+        },
+        "state": "running"
+      }
+    },
+    {
+      "id": "demo-r5",
+      "primary_type": "oversized_instance",
+      "types": [
+        "oversized_instance"
+      ],
+      "severity": "medium",
+      "resource_id": "i-0bbccddeeff001122",
+      "resource_name": "prod-cache-1",
+      "resource_kind": "EC2",
+      "instance_type": "r5.xlarge",
+      "region": "us-east-1",
+      "monthly_cost_usd": 91.98,
+      "annual_cost_usd": 1103.76,
+      "monthly_kwh": 6.423,
+      "monthly_kg_co2": 2.67,
+      "annual_kg_co2": 32.04,
+      "recommendation": "Downsize r5.xlarge \u2192 r5.large. CPU is low enough that half the RAM is not earning its keep.",
+      "evidence": {
+        "avg_cpu_percent": 8.4,
+        "avg_network_bytes_per_hour": 1200000,
+        "lookback_days": 7,
+        "age_days": 120,
+        "suggested_type": "r5.large",
+        "current_monthly_usd": 183.96,
+        "resized_monthly_usd": 91.98,
+        "tags": {
+          "Name": "prod-cache-1",
+          "Environment": "prod"
+        },
+        "state": "running"
+      }
+    },
+    {
+      "id": "demo-nat",
+      "primary_type": "idle_nat",
+      "types": [
+        "idle_nat"
+      ],
+      "severity": "high",
+      "resource_id": "nat-0abc111def222333",
+      "resource_name": "dev-nat",
+      "resource_kind": "NAT Gateway",
+      "instance_type": null,
+      "region": "us-east-1",
+      "monthly_cost_usd": 32.85,
+      "annual_cost_usd": 394.2,
+      "monthly_kwh": 9.943,
+      "monthly_kg_co2": 4.134,
+      "annual_kg_co2": 49.6,
+      "recommendation": "NAT gateways bill ~$32/month even with zero traffic. Delete this leftover from a discarded VPC experiment.",
+      "evidence": {
+        "bytes_out_lookback": 48000,
+        "lookback_days": 7,
+        "age_days": 61,
+        "state": "available"
+      }
+    },
+    {
+      "id": "demo-vol",
+      "primary_type": "unattached_volume",
+      "types": [
+        "unattached_volume"
+      ],
+      "severity": "high",
+      "resource_id": "vol-0aaa111bbb222ccc",
+      "resource_name": "backup-restore-tmp",
+      "resource_kind": "EBS",
+      "instance_type": null,
+      "region": "us-east-1",
+      "monthly_cost_usd": 16.0,
+      "annual_cost_usd": 192.0,
+      "monthly_kwh": 0.388,
+      "monthly_kg_co2": 0.161,
+      "annual_kg_co2": 1.94,
+      "recommendation": "Unattached 200 GB volume. Snapshot if you need the data, then delete.",
+      "evidence": {
+        "size_gb": 200,
+        "volume_type": "gp3",
+        "state": "available",
+        "age_days": 34,
+        "tags": {
+          "Name": "backup-restore-tmp"
+        }
+      }
+    },
+    {
+      "id": "demo-vol2",
+      "primary_type": "unattached_volume",
+      "types": [
+        "unattached_volume"
+      ],
+      "severity": "medium",
+      "resource_id": "vol-0ddd444eee555fff",
+      "resource_name": "from-terminated-i-0999",
+      "resource_kind": "EBS",
+      "instance_type": null,
+      "region": "us-east-1",
+      "monthly_cost_usd": 8.0,
+      "annual_cost_usd": 96.0,
+      "monthly_kwh": 0.155,
+      "monthly_kg_co2": 0.065,
+      "annual_kg_co2": 0.78,
+      "recommendation": "Orphaned root volume from a terminated instance. Delete if no snapshot is required.",
+      "evidence": {
+        "size_gb": 80,
+        "volume_type": "gp2",
+        "state": "available",
+        "age_days": 19,
+        "tags": {
+          "Name": "from-terminated-i-0999"
+        }
+      }
+    },
+    {
+      "id": "demo-eip",
+      "primary_type": "unused_eip",
+      "types": [
+        "unused_eip"
+      ],
+      "severity": "low",
+      "resource_id": "eipalloc-0aa11bb22cc33dd",
+      "resource_name": "54.234.10.88",
+      "resource_kind": "Elastic IP",
+      "instance_type": null,
+      "region": "us-east-1",
+      "monthly_cost_usd": 3.65,
+      "annual_cost_usd": 43.8,
+      "monthly_kwh": 0.0,
+      "monthly_kg_co2": 0.0,
+      "annual_kg_co2": 0.0,
+      "recommendation": "Unassociated Elastic IP. Release it \u2014 AWS charges for idle public IPv4.",
+      "evidence": {
+        "public_ip": "54.234.10.88",
+        "associated": false
+      }
+    }
+  ],
+  "methodology": "Estimates use Cloud Carbon Footprint coefficients (min/max watts per vCPU, 0.392 W/GB memory, 1.2 Wh/TB-hour SSD, EBS replication 2, AWS PUE 1.135) and regional grid intensity (EPA eGRID / CCF). These are modeled figures, not AWS-measured per-resource emissions. Dollar amounts use us-east-1 on-demand list prices. Idle Elastic IPs have cost but negligible energy."
+}

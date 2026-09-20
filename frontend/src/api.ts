@@ -18,14 +18,29 @@ async function readError(res: Response): Promise<string> {
   }
 }
 
+const asset = (path: string) => {
+  const base = import.meta.env.BASE_URL || "/";
+  return `${base}${path.replace(/^\//, "")}`;
+};
+
 export async function fetchStatus(): Promise<Status> {
-  const res = await fetch("/api/status");
-  if (!res.ok) throw new Error(await readError(res));
-  return res.json();
+  try {
+    const res = await fetch("/api/status");
+    if (res.ok) return res.json();
+  } catch {
+    /* static host has no API */
+  }
+  return { ok: true, name: "ember", live_aws: false, region: "us-east-1" };
 }
 
 export async function fetchDemo(region = "us-east-1"): Promise<ScanResult> {
-  const res = await fetch(`/api/demo?region=${encodeURIComponent(region)}`);
+  try {
+    const res = await fetch(`/api/demo?region=${encodeURIComponent(region)}`);
+    if (res.ok) return res.json();
+  } catch {
+    /* fall through to bundled ledger */
+  }
+  const res = await fetch(asset("sample-ledger.json"));
   if (!res.ok) throw new Error(await readError(res));
   return res.json();
 }
