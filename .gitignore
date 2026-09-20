@@ -14,5 +14,6 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+.railway/
 scripts/.ember-seed-*.json
 backend/.venv/
